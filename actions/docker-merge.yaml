@@ -14,10 +14,22 @@ inputs:
   dockerBuildArguments:
     description: 'Docker build args'
     default: ''  
+  repository:
+    description: 'Repository Name - This is used to checkout your repo correctly'
+    default: ''
+  branch:
+    description: 'Branch ref eg. refs/heads/release-2021-07-end'
+    default: 'refs/heads/master'
 
 runs:
   using: "composite"
   steps:
+    - name: Checkout Repo
+      uses: actions/checkout@master
+      with:
+        name: ApteanSandbox/${{ inputs.repository }}
+        ref: ${{ inputs.branch }}
+
     - name: Copy Proto Files
       run: |
         if ("${{ inputs.protoSrcPath }}".length -eq 0 -Or "${{ inputs.protoDestPath }}".length -eq 0) {
