@@ -1,0 +1,47 @@
+inputs:
+  protoSrcPath: 
+    description: 'Protobuf source'
+    default: ''
+  protoDestPath:
+    description: 'Protobuf destination'
+    default: ''
+  dockerFilePath:
+    description: 'Dockerfile path'
+    default: ''
+  dockerBuildContext:
+    description: 'Docker context'
+    default: '.'
+  dockerBuildArguments:
+    description: 'Docker build args'
+    default: ''  
+  dockerImageTags:
+    description: 'Docker image tags'
+    default: ''
+
+runs:
+  using: "composite"
+  steps:
+    - name: Copy Proto Files
+      run: |
+        if ("${{ inputs.protoSrcPath }}".length -eq 0 -Or "${{ inputs.protoDestPath }}".length -eq 0) {
+          Write-Host "No protobuff src or dest path provided. Not copying file."
+          Exit
+        }
+        Copy-Item -Path "${{ inputs.protoSrcPath }}" -Destination "${{ inputs.protoDestPath }}" -Recurse
+        $fileCount = @( Get-ChildItem "${{ inputs.protoDestPath }}" ).Count
+        Write-Host "Protobuff definitions copied! $fileCount file(s) copied!"
+      shell: pwsh
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    # TODO: Log into ACR
+
+    - name: Build Dockerfile
+      uses: docker/build-push-action@v2
+      with:
+        context: ${{ inputs.dockerBuildContext }}
+        file: ${{ inputs.dockerFilePath }}
+        build-args: ${{ inputs.dockerBuildArguments }}
+        tags: $ {{ inputs.dockerImageTags }}
+        push: true
