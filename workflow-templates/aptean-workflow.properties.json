@@ -1,0 +1,8 @@
+{
+    "name": "Aptean Sandbox Workflow",
+    "description": "Aptean sandbox workflow template.",
+    "iconName": "example-icon",
+    "categories": [
+        "Go"
+    ]
+}
