@@ -35,7 +35,12 @@ runs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
 
-    # TODO: Log into ACR
+    - name: ACR Login
+      uses: azure/docker-login@v1
+      with:
+        login-server: contoso.azurecr.io
+        username: ${{ secrets.SHR_ACR_USERNAME }}
+        password: ${{ secrets.SHR_ACR_PASSWORD }}
 
     - name: Build Dockerfile
       uses: docker/build-push-action@v2
